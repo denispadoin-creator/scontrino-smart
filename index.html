@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Scontrino Smart</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--p:#2563eb;--pd:#1d4ed8;--s:#16a34a;--d:#dc2626;--w:#ca8a04;--bg:#f8fafc;--c:#fff;--t:#1e293b;--tl:#64748b;--b:#e2e8f0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t);line-height:1.5;padding-bottom:80px}
+.header{background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;padding:20px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:0 4px 15px rgba(37,99,235,0.3)}
+.header h1{font-size:1.4rem;font-weight:700}
+.header p{font-size:.85rem;opacity:.9;margin-top:4px}
+.container{max-width:600px;margin:0 auto;padding:16px}
+.card{background:var(--c);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);border:1px solid var(--b)}
+.ct{font-size:1.05rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;width:100%}
+.btn:active{transform:scale(.98)}
+.bp{background:var(--p);color:#fff}.bp:active{background:var(--pd)}
+.bs{background:var(--s);color:#fff}.bd{background:var(--d);color:#fff}.b2{background:var(--b);color:var(--t)}
+.bsm{padding:8px 16px;font-size:.85rem;width:auto}
+.fiw{position:relative;overflow:hidden;display:inline-block;width:100%}
+.fiw input{position:absolute;left:-9999px}
+.pi{width:100%;max-height:300px;object-fit:contain;border-radius:12px;margin:12px 0;border:2px dashed var(--b)}
+.ot{background:#f1f5f9;border-radius:10px;padding:12px;font-size:.85rem;font-family:'Courier New',monospace;white-space:pre-wrap;max-height:200px;overflow-y:auto;border:1px solid var(--b);margin:12px 0}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:.9rem;font-weight:600;margin-bottom:6px;color:var(--tl)}
+.fg input,.fg select{width:100%;padding:12px 14px;border:2px solid var(--b);border-radius:10px;font-size:1rem;background:#fff}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--p)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ld{display:none;text-align:center;padding:20px}
+.ld.a{display:block}
+.sp{width:40px;height:40px;border:4px solid var(--b);border-top-color:var(--p);border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sc{display:none}.sc.a{display:block}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.st{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-radius:14px;padding:16px;text-align:center;border:1px solid #bae6fd}
+.st.w{background:linear-gradient(135deg,#fefce8,#fef9c3);border-color:#fde047}
+.st.r{background:linear-gradient(135deg,#fef2f2,#fee2e2);border-color:#fca5a5}
+.sv{font-size:1.6rem;font-weight:800;color:var(--p)}
+.st.w .sv{color:var(--w)}.st.r .sv{color:var(--d)}
+.sl{font-size:.75rem;color:var(--tl);margin-top:4px;font-weight:600}
+.tc{overflow-x:auto;border-radius:12px;border:1px solid var(--b)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{background:#f8fafc;padding:10px;text-align:left;font-weight:700;color:var(--tl);border-bottom:2px solid var(--b);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--b)}
+tr:hover{background:#f8fafc}
+.pt{font-weight:700;color:var(--s)}
+.bdg{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700}
+.bb{background:#dbeafe;color:#1d4ed8}.bg{background:#dcfce7;color:#15803d}.bo{background:#ffedd5;color:#c2410c}.bp2{background:#f3e8ff;color:#7c3aed}
+.cc{position:relative;height:250px;margin-top:16px}
+.es{text-align:center;padding:40px 20px;color:var(--tl)}
+.es i{font-size:3rem;margin-bottom:12px}
+.cr{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--b)}
+.cr:last-child{border-bottom:none}
+.cs{font-weight:700}.cp{font-weight:800;color:var(--p);font-size:1.1rem}
+.cp.b{color:var(--s)}.cp.x{color:var(--d)}
+.cd{font-size:.75rem;color:var(--tl)}
+.fb{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.fb select,.fb input{padding:8px 12px;border:2px solid var(--b);border-radius:8px;font-size:.9rem;flex:1;min-width:120px}
+.to{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--t);color:#fff;padding:12px 24px;border-radius:12px;font-weight:600;z-index:1000;opacity:0;transition:all .3s;pointer-events:none}
+.to.s{transform:translateX(-50%) translateY(0);opacity:1}
+.bn{position:fixed;bottom:0;left:0;right:0;background:var(--c);border-top:1px solid var(--b);display:flex;justify-content:space-around;padding:8px 0;z-index:100}
+.bni{flex:1;text-align:center;padding:6px;cursor:pointer;border:none;background:none;color:var(--tl);font-size:.7rem;font-weight:600}
+.bni.a{color:var(--p)}
+.bni i{font-size:1.4rem;display:block;margin-bottom:2px}
+.db{background:none;border:none;color:var(--d);font-size:1.2rem;cursor:pointer;padding:4px}
+.pb{width:100%;height:6px;background:var(--b);border-radius:3px;overflow:hidden;margin-top:8px}
+.pf{height:100%;background:var(--p);border-radius:3px;transition:width .3s}
+.oh{background:#fefce8;border:1px solid #fde047;border-radius:10px;padding:12px;font-size:.85rem;color:#854d0e;margin-bottom:12px}
+.od{background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:12px;font-size:.85rem;color:#166534;margin-bottom:12px}
+.odi{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed #86efac}
+.odi:last-child{border-bottom:none}
+.ps{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pc{background:#e0e7ff;color:#3730a3;padding:6px 12px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;border:none}
+.pc:hover{background:#c7d2fe}
+.bc{background:#fce7f3;color:#be185d;padding:6px 12px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;border:none}
+.bc:hover{background:#fbcfe8}
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.btn-grid .btn{width:100%}
+.btn-row{display:flex;gap:8px;margin-bottom:12px}
+.btn-row .btn{flex:1}
+@media(max-width:400px){.sg{grid-template-columns:1fr}.fr{grid-template-columns:1fr}.btn-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>🧾 Scontrino Smart</h1>
+<p>Scatta, leggi, confronta, risparmia</p>
+</div>
+
+<div class="container">
+
+<!-- SCAN SCONTRINO -->
+<div id="s-scan" class="sc a">
+<div class="card">
+<div class="ct">📸 Scontrino</div>
+<p style="color:var(--tl);font-size:.9rem;margin-bottom:12px">Scegli come inserire i dati:</p>
+
+<div class="btn-grid">
+<button class="btn bp" onclick="openCamera()">📷 Scatta foto</button>
+<button class="btn b2" onclick="document.getElementById('fi').click()">🖼️ Importa foto</button>
+</div>
+<button class="btn bs" onclick="showManualForm()" style="margin-bottom:12px">✏️ Inserisci manualmente</button>
+
+<input type="file" id="fi" accept="image/*" style="display:none" onchange="handleImport(event)">
+
+<div id="cameraPreview" style="display:none">
+<video id="video" style="width:100%;border-radius:12px;margin:12px 0" autoplay playsinline></video>
+<canvas id="canvas" style="display:none"></canvas>
+<img id="capturedImg" class="pi" style="display:none">
+<div class="btn-row">
+<button class="btn bp" onclick="takePhoto()">📸 Scatta</button>
+<button class="btn bd" onclick="closeCamera()">❌ Annulla</button>
+</div>
+</div>
+
+<img id="preview" class="pi" style="display:none">
+
+<div id="ol" class="ld">
+<div class="sp"></div>
+<p>🔍 Sto leggendo lo scontrino...</p>
+<p style="font-size:.8rem;color:var(--tl)">Può richiedere qualche secondo</p>
+</div>
+
+<div id="or" style="display:none">
+<div class="oh">⚠️ <strong>Nota:</strong> L'OCR può commettere errori. Verifica e correggi i dati prima di salvare.</div>
+<div id="odt" class="od" style="display:none">
+<strong>🔎 Dati rilevati automaticamente:</strong>
+<div id="odc"></div>
+</div>
+<label style="font-size:.85rem;font-weight:600;color:var(--tl)">Testo estratto:</label>
+<div id="ot" class="ot"></div>
+<div class="btn-row">
+<button class="btn b2 bsm" onclick="retryOCR()">🔄 Riprova OCR</button>
+<button class="btn b2 bsm" onclick="skipOCR()">✏️ Inserisci manualmente</button>
+</div>
+</div>
+</div>
+
+<div id="fc" class="card" style="display:none">
+<div class="ct">📝 Dati acquisto</div>
+<div class="fg">
+<label>Negozio *</label>
+<input type="text" id="si" placeholder="Es. Conad, Esselunga, Lidl...">
+</div>
+<div class="fr">
+<div class="fg">
+<label>Marca *</label>
+<input type="text" id="bi" placeholder="Es. Barilla, Mulino Bianco...">
+<div id="bs" class="ps"></div>
+</div>
+<div class="fg">
+<label>Prodotto *</label>
+<input type="text" id="pi2" placeholder="Es. Pasta, Biscotti...">
+<div id="ps" class="ps"></div>
+</div>
+</div>
+<div class="fr">
+<div class="fg">
+<label>Prezzo (€) *</label>
+<input type="number" id="pri" step="0.01" min="0" placeholder="0.00">
+</div>
+<div class="fg">
+<label>Quantità</label>
+<input type="number" id="qi" value="1" min="1">
+</div>
+</div>
+<div class="fg">
+<label>Data</label>
+<input type="date" id="di">
+</div>
+<button class="btn bs" onclick="spu()">💾 Salva acquisto</button>
+</div>
+</div>
+
+<!-- SCAN ETICHETTE -->
+<div id="s-etic" class="sc">
+<div class="card">
+<div class="ct">🏷️ Etichette scaffali</div>
+<p style="color:var(--tl);font-size:.9rem;margin-bottom:12px">Fotografa l'etichetta del prodotto per leggere prezzo al kg/litro, barcode e QR code</p>
+
+<div class="btn-grid">
+<button class="btn bp" onclick="openCameraEtic()">📷 Scatta etichetta</button>
+<button class="btn b2" onclick="document.getElementById('fie').click()">🖼️ Importa etichetta</button>
+</div>
+<button class="btn bs" onclick="showManualEtic()" style="margin-bottom:12px">✏️ Inserisci etichetta manualmente</button>
+
+<input type="file" id="fie" accept="image/*" style="display:none" onchange="handleImportEtic(event)">
+
+<div id="cameraPreviewEtic" style="display:none">
+<video id="videoEtic" style="width:100%;border-radius:12px;margin:12px 0" autoplay playsinline></video>
+<canvas id="canvasEtic" style="display:none"></canvas>
+<img id="capturedImgEtic" class="pi" style="display:none">
+<div class="btn-row">
+<button class="btn bp" onclick="takePhotoEtic()">📸 Scatta</button>
+<button class="btn bd" onclick="closeCameraEtic()">❌ Annulla</button>
+</div>
+</div>
+
+<img id="previewEtic" class="pi" style="display:none">
+
+<div id="olEtic" class="ld">
+<div class="sp"></div>
+<p>🔍 Sto leggendo l'etichetta...</p>
+<p style="font-size:.8rem;color:var(--tl)">Può richiedere qualche secondo</p>
+</div>
+
+<div id="orEtic" style="display:none">
+<div class="oh">⚠️ <strong>Nota:</strong> L'OCR può commettere errori. Verifica e correggi i dati prima di salvare.</div>
+<div id="odtEtic" class="od" style="display:none">
+<strong>🔎 Dati rilevati automaticamente:</strong>
+<div id="odcEtic"></div>
+</div>
+<label style="font-size:.85rem;font-weight:600;color:var(--tl)">Testo estratto:</label>
+<div id="otEtic" class="ot"></div>
+<div class="btn-row">
+<button class="btn b2 bsm" onclick="retryOCREtic()">🔄 Riprova OCR</button>
+<button class="btn b2 bsm" onclick="skipOCREtic()">✏️ Inserisci manualmente</button>
+</div>
+</div>
+</div>
+
+<div id="fcEtic" class="card" style="display:none">
+<div class="ct">📝 Dati etichetta</div>
+<div class="fg">
+<label>Negozio *</label>
+<input type="text" id="siEtic" placeholder="Es. Conad, Esselunga, Lidl...">
+</div>
+<div class="fr">
+<div class="fg">
+<label>Marca *</label>
+<input type="text" id="biEtic" placeholder="Es. Barilla, Mulino Bianco...">
+</div>
+<div class="fg">
+<label>Prodotto *</label>
+<input type="text" id="piEtic" placeholder="Es. Pasta, Biscotti...">
+</div>
+</div>
+<div class="fr">
+<div class="fg">
+<label>Prezzo (€) *</label>
+<input type="number" id="priEtic" step="0.01" min="0" placeholder="0.00">
+</div>
+<div class="fg">
+<label>Prezzo al kg/litro (€)</label>
+<input type="number" id="pukgEtic" step="0.01" min="0" placeholder="Es. 2.50">
+</div>
+</div>
+<div class="fr">
+<div class="fg">
+<label>Peso/Volume</label>
+<input type="text" id="pvEtic" placeholder="Es. 500g, 1L, 250ml...">
+</div>
+<div class="fg">
+<label>Codice a barre</label>
+<input type="text" id="barEtic" placeholder="Es. 8001234567890">
+</div>
+</div>
+<div class="fg">
+<label>Data</label>
+<input type="date" id="diEtic">
+</div>
+<button class="btn bs" onclick="spuEtic()">💾 Salva etichetta</button>
+</div>
+</div>
+
+<!-- HISTORY -->
+<div id="s-his" class="sc">
+<div class="card">
+<div class="ct">📋 Storico acquisti</div>
+<div class="fb">
+<select id="fs" onchange="rh()"><option value="">Tutti i negozi</option></select>
+<select id="fb" onchange="rh()"><option value="">Tutte le marche</option></select>
+<select id="fp" onchange="rh()"><option value="">Tutti i prodotti</option></select>
+</div>
+<div id="hc"></div>
+</div>
+</div>
+
+<!-- COMPARE -->
+<div id="s-com" class="sc">
+<div class="card">
+<div class="ct">⚖️ Confronta prezzi</div>
+<div class="fg">
+<label>Marca</label>
+<select id="cb" onchange="ucp()"><option value="">Tutte le marche</option></select>
+</div>
+<div class="fg">
+<label>Prodotto</label>
+<select id="cp" onchange="rc()"></select>
+</div>
+<div id="cc"></div>
+</div>
+</div>
+
+<!-- TREND -->
+<div id="s-tre" class="sc">
+<div class="card">
+<div class="ct">📈 Andamento prezzi</div>
+<div class="fg">
+<label>Marca</label>
+<select id="tb" onchange="utp()"><option value="">Tutte le marche</option></select>
+</div>
+<div class="fg">
+<label>Prodotto</label>
+<select id="tp" onchange="rt()"></select>
+</div>
+<div class="fg">
+<label>Negozio (opzionale)</label>
+<select id="ts" onchange="rt()"><option value="">Tutti i negozi</option></select>
+</div>
+<div id="tc2"></div>
+</div>
+</div>
+
+<!-- STATS -->
+<div id="s-sta" class="sc">
+<div class="card">
+<div class="ct">📊 Statistiche</div>
+<div class="sg">
+<div class="st"><div class="sv" id="sts">€0</div><div class="sl">Totale speso</div></div>
+<div class="st"><div class="sv" id="sti">0</div><div class="sl">Acquisti totali</div></div>
+<div class="st w"><div class="sv" id="stm">€0</div><div class="sl">Questo mese</div></div>
+<div class="st r"><div class="sv" id="sty">€0</div><div class="sl">Quest'anno</div></div>
+</div>
+</div>
+<div class="card">
+<div class="ct">📅 Spesa per mese</div>
+<div class="cc"><canvas id="mc"></canvas></div>
+</div>
+<div class="card">
+<div class="ct">🏪 Spesa per negozio</div>
+<div class="cc"><canvas id="sc2"></canvas></div>
+</div>
+<div class="card">
+<div class="ct">🏷️ Marche più acquistate</div>
+<div id="tbm"></div>
+</div>
+<div class="card">
+<div class="ct">🛒 Prodotti più acquistati</div>
+<div id="tpm"></div>
+</div>
+<div class="card">
+<div class="ct">⚙️ Gestione dati</div>
+<button class="btn b2" onclick="ed()">📥 Esporta Excel (CSV)</button>
+<button class="btn bd" style="margin-top:8px" onclick="cd()">🗑️ Cancella tutti i dati</button>
+</div>
+</div>
+
+</div>
+
+<div class="to" id="to"></div>
+
+<div class="bn">
+<button class="bni a" onclick="ss('scan')"><i>📸</i>Scontrino</button>
+<button class="bni" onclick="ss('etic')"><i>🏷️</i>Etichette</button>
+<button class="bni" onclick="ss('his')"><i>📋</i>Storico</button>
+<button class="bni" onclick="ss('com')"><i>⚖️</i>Confronto</button>
+<button class="bni" onclick="ss('tre')"><i>📈</i>Andamento</button>
+<button class="bni" onclick="ss('sta')"><i>📊</i>Stats</button>
+</div>
+
+<script>
+const BK=[
+'BARILLA','VOIELLO','PAVESI','GRANORO','DE CECCO','GAROFALO',
+'MULINO BIANCO','BAIOCCHI','MACINE','GALLETTI','RIGOLI','TORTINA',
+'NESTLE','FERRERO','KINDER','NUTELLA','FERRERO ROCHER','MON CHERI','RAFFAELLO','DUplo','HANUTA',
+'COCA COLA','COCA-COLA','FANTA','SPRITE','PEPSI','7UP','ORANGINA','SCHWEPPES',
+'LAVAZZA','ILLY','KIMBO','BORBONE','NESCAFE','NESCAFÉ','PASSALACQUA',
+'PARMALAT','CENTRALE DEL LATTE','GRANAROLO','MULLER','ZOTT','YEO',
+'FINDUS','BIRDS EYE','IGLO','DR OETKER','DR.OETKER','BUITONI','RANA','GIOVANNI RANA',
+'MAGGI','KNORR','STAR','DADO','BRODO',
+'PAMPERS','LINES','ALWAYS','TAMPAX',
+'DOVE','REXONA','AXE','LUX','OMO','SKIP','CIF','PERSIL','SILAN',
+'HEAD & SHOULDERS','PANTENE','GILLETTE','ORAL-B','BRAUN',
+'COLGATE','PALMOLIVE','MENTADENT',
+'FINISH','VANISH','CALGON','AIRWICK','DETTOL',
+'DANONE','ACTIVIA','ACTIMEL','EVIAN','VOLVIC',
+'MONDELEZ','OREO','BELVITA','MILKA','TOBLERONE','CADBURY',
+'KELLOGG','PRINGLES','CHEERIOS','CORN FLAKES',
+'HEINZ','HELLMANN','MUTTI','CIRIO','AGROMONTE',
+'RUMMO','DIVELLA','LUSTUCRU','PANZANI','PASTA REGGIA',
+'SAN PELLEGRINO','ACQUA PANNA','SANTA ROSA','LEVissima','ROCCHETTA',
+'FERRARINI','BERTOLLI','OLIO CUORE','MONINI','CARLI','OLITALIA',
+'SAIWA','GALBANI','MOZZARELLA','PARMIGIANO','GRANA PADANO','PECORINO','RICOTTA',
+'LOACKER','BALOCCO','CAMEO','Motta','Alemagna','MENZ&GASSER',
+'GRANCIA','CRACKERS','TUC','RITZ','DIGESTIVE','RINGO','GRISBI','FROLLINI',
+'YOPLAIT','ALPEN',
+'BEN & JERRY','BEN&JERRY','HAAGEN DAZS','CARTE D OR',
+'FRIGO','MAXIBON','CORNETTO','MAGNUM','SOLERO','ALGIDA',
+'RISTORANTE','CASA','FORNO',
+'AIA','AMADORI','FILIPPI','VERONESI',
+'VILLANI','VERONI','FIOCCHI','RUGGERI','BERETTA','CLAI',
+'BRAIDEN','STRACCHINO','ROBIOLA','GORGONZOLA','TALEGGIO',
+'FRISCHLI','MERANO','VALSOIA','SOIA','MANDORLA','RISO',
+'PROCTER','GAMBLE','UNILEVER','HENKEL','RECKITT',
+'RED BULL','MONSTER','ROCKSTAR','BURN',
+'APEROL','CAMPARI','MARTINI','CINZANO','RAMAZZOTTI',
+'HEINEKEN','PERONI','NASTRO AZZURRO','MENABREA','BIRRA MORETTI',
+'CORONA','BUD','CARLSBERG','TUBORG','BECK',
+'JOHNNIE WALKER','BALLANTINE','CHIVAS','JACK DANIEL','JACK DANIELS',
+'BACARDI','HAVANA CLUB','BELVEDERE',
+'SMIRNOFF','ABSOLUT','GREY GOOSE','FINLANDIA',
+'MOET','CHANDON','VEUVE CLICQUOT','DOM PERIGNON','KRUG',
+'PROSECCO','VALDOBBIADENE','FRANCIACORTA','ASTI','LAMBRUSCO',
+'CHIANTI','BRUNELLO','BAROLO','AMARONE','PRIMITIVO','NERO D AVOLA',
+'SANTA MARGHERITA','PINOT GRIGIO','TENUTA','BANFI','ANTINORI',
+'FERRARI','CAVIT','MEZZACORONA','RUFFINO','CAVASCO',
+'GIOIA DEL COLLE','NEGROAMARO','SALICE SALENTINO',
+'DIESEL','LEVI','WRANGLER','G-STAR','PEPE JEANS',
+'ZARA','H&M','BERSHKA','PULL&BEAR','STRADIVARIUS','MASSIMO DUTTI',
+'OVS','UNITED COLORS','BENETTON','CALZEDONIA','INTIMISSIMI',
+'TEZENIS','YAMAMAY','LIU JO','GUESS','ARMANI','VERSACE',
+'NIKE','ADIDAS','PUMA','REEBOK','NEW BALANCE','ASICS','MIZUNO',
+'CONVERSE','VANS','TIMBERLAND','CATERPILLAR','DOCKERS',
+'SAMSUNG','APPLE','HUAWEI','XIAOMI','OPPO','REALME','ONEPLUS',
+'LG','SONY','PANASONIC','PHILIPS','BOSCH','SIEMENS','MIELE',
+'INDESIT','HOTPOINT','ARISTON','CANDY','WHIRLPOOL','ELECTROLUX',
+'ZANUSSI','BEKO','SMEG','DE LONGHI','DELONGHI','IMETEC','ROWENTA',
+'DYSON','KARCHER','FOLLETTO','VORWERK','BRAUN','ORAL-B',
+'NESCAFE','NESCAFÉ','DOLCE GUSTO','LAVAZZA','A MODO MIO','ILLY','BIALETTI',
+'TASSIMO','SENSEO','CAFFITALY','KIMBO','BORBONE','PASSALACQUA',
+'PANDORO','PANETTONE','COLOMBA','BAULI','MELEGATTI','MAINA','MOTTA',
+'MERENDINE','PLUMCAKE','CROISSANT',
+'AMATRICIANA','ARRABBIATA','BOLOGNESE','PESTO','SUGO',
+'SALSA','PASSATA','POLPA',
+'SALUMI','PROSCIUTTO','MORTADELLA','SALAME','SPECK',
+'FORMAGGIO','STRACCHINO','ROBIOLA','GORGONZOLA','TALEGGIO',
+'LATTE','YOGURT','KEFIR',
+'GELATO','SURGELATI','VERDURE','PESCE','CARNE',
+'PIZZA','SURGELATA','FRESCHI',
+'CONSISTENZA','SUGHI'
+];
+
+const BA={
+'COCA COLA':'Coca-Cola','COCA-COLA':'Coca-Cola','COCA':'Coca-Cola',
+'NESCAFE':'Nescafé','NESCAFÉ':'Nescafé',
+'KELLOGG':'Kellogg\'s',
+'HELLMANN':'Hellmann\'s',
+'BEN & JERRY':'Ben & Jerry\'s','BEN&JERRY':'Ben & Jerry\'s',
+'HAAGEN DAZS':'Häagen-Dazs','CARTE D OR':'Carte d\'Or',
+'DR OETKER':'Dr. Oetker','DR.OETKER':'Dr. Oetker',
+'RANA':'Giovanni Rana','GIOVANNI RANA':'Giovanni Rana',
+'LEVI':'Levi\'s','LEVIS':'Levi\'s',
+'BECK':'Beck\'s','BECKS':'Beck\'s',
+'JACK DANIEL':'Jack Daniel\'s','JACK DANIELS':'Jack Daniel\'s',
+'BALLANTINE':'Ballantine\'s',
+'MOET':'Moët','CHANDON':'Moët & Chandon',
+'NERO D AVOLA':'Nero d\'Avola',
+'DELONGHI':'De\'Longhi'
+};
+
+let pu=JSON.parse(localStorage.getItem('scontrino_purchases')||'[]');
+let pe=JSON.parse(localStorage.getItem('scontrino_etichette')||'[]');
+let cot='';
+let mci=null,sci=null;
+let stream=null;
+
+document.addEventListener('DOMContentLoaded',()=>{
+document.getElementById('di').valueAsDate=new Date();
+document.getElementById('diEtic').valueAsDate=new Date();
+ua();
+});
+
+function ss(s){
+document.querySelectorAll('.sc').forEach(x=>x.classList.remove('a'));
+document.querySelectorAll('.bni').forEach(x=>x.classList.remove('a'));
+document.getElementById('s-'+s).classList.add('a');
+event.target.closest('.bni').classList.add('a');
+if(s==='sta')rst();
+if(s==='his')rh();
+if(s==='com'){ucp();rc();}
+if(s==='tre'){utp();rt();}
+}
+
+// ==================== FOTOCAMERA SCONTRINO ====================
+function openCamera(){
+const cp=document.getElementById('cameraPreview');
+cp.style.display='block';
+document.getElementById('preview').style.display='none';
+document.getElementById('or').style.display='none';
+document.getElementById('fc').style.display='none';
+navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+.then(s=>{
+stream=s;
+document.getElementById('video').srcObject=s;
+})
+.catch(err=>{
+st('❌ Errore fotocamera: '+err.message);
+cp.style.display='none';
+});
+}
+
+function closeCamera(){
+if(stream){
+stream.getTracks().forEach(t=>t.stop());
+stream=null;
+}
+document.getElementById('cameraPreview').style.display='none';
+document.getElementById('capturedImg').style.display='none';
+}
+
+function takePhoto(){
+const video=document.getElementById('video');
+const canvas=document.getElementById('canvas');
+canvas.width=video.videoWidth;
+canvas.height=video.videoHeight;
+const ctx=canvas.getContext('2d');
+ctx.drawImage(video,0,0);
+const dataUrl=canvas.toDataURL('image/jpeg');
+document.getElementById('capturedImg').src=dataUrl;
+document.getElementById('capturedImg').style.display='block';
+closeCamera();
+processImage(dataUrl);
+}
+
+function handleImport(e){
+const file=e.target.files[0];
+if(!file)return;
+const reader=new FileReader();
+reader.onload=(e2)=>{
+const dataUrl=e2.target.result;
+document.getElementById('preview').src=dataUrl;
+document.getElementById('preview').style.display='block';
+document.getElementById('or').style.display='none';
+document.getElementById('fc').style.display='none';
+processImage(dataUrl);
+};
+reader.readAsDataURL(file);
+}
+
+function processImage(dataUrl){
+document.getElementById('ol').classList.add('a');
+document.getElementById('or').style.display='none';
+Tesseract.recognize(dataUrl,'ita',{
+logger:m=>{
+if(m.status==='recognizing text'){
+const pct=Math.round(m.progress*100);
+document.querySelector('#ol p').textContent='🔍 Sto leggendo lo scontrino... '+pct+'%';
+}
+}
+}).then(result=>{
+cot=result.data.text;
+document.getElementById('ot').textContent=cot;
+document.getElementById('ol').classList.remove('a');
+document.getElementById('or').style.display='block';
+edo(cot);
+}).catch(err=>{
+document.getElementById('ol').classList.remove('a');
+st('❌ Errore OCR: '+err.message);
+showManualForm();
+});
+}
+
+function showManualForm(){
+document.getElementById('fc').style.display='block';
+document.getElementById('preview').style.display='none';
+document.getElementById('cameraPreview').style.display='none';
+document.getElementById('or').style.display='none';
+document.getElementById('capturedImg').style.display='none';
+const bs=document.getElementById('bs');
+bs.innerHTML='';
+const kb=[...new Set(pu.map(p=>p.brand).filter(b=>b))].sort();
+kb.slice(0,8).forEach(b=>{
+const c=document.createElement('button');
+c.className='bc';
+c.textContent=b;
+c.onclick=()=>{document.getElementById('bi').value=b;};
+bs.appendChild(c);
+});
+const ps=document.getElementById('ps');
+ps.innerHTML='';
+const kp=[...new Set(pu.map(p=>p.product).filter(p=>p))].sort();
+kp.slice(0,8).forEach(p=>{
+const c=document.createElement('button');
+c.className='pc';
+c.textContent=p;
+c.onclick=()=>{document.getElementById('pi2').value=p;};
+ps.appendChild(c);
+});
+}
+
+function retryOCR(){
+document.getElementById('fi').value='';
+const img=document.getElementById('capturedImg');
+if(img.style.display!=='none'&&img.src){
+processImage(img.src);
+}else if(document.getElementById('preview').style.display!=='none'){
+processImage(document.getElementById('preview').src);
+}else{
+openCamera();
+}
+}
+
+function skipOCR(){
+document.getElementById('ol').classList.remove('a');
+document.getElementById('or').style.display='none';
+showManualForm();
+}
+
+function edo(text){
+const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
+const d={};
+
+const sk=['CONAD','ESSELUNGA','LIDL','CARREFOUR','COOP','PAM','PENNY','ALDI','MD','EUROSPIN','DESPAR','CONAD CITY','IPERCOOP','UNES','SIGMA','FAMILA','CRAI','SPAR','GROS','SIMPLY','Iper','Super','Market','MARKET'];
+let store='';
+for(const line of lines){
+const u=line.toUpperCase();
+for(const kw of sk){if(u.includes(kw.toUpperCase())){store=kw;break;}}
+if(store)break;
+}
+if(!store&&lines[0]&&lines[0].length<40)store=lines[0];
+if(store)d.store=store;
+
+let brand='';
+for(const line of lines){
+const u=line.toUpperCase().replace(/[^A-Z0-9 &'-]/g,' ');
+for(const kw of BK){
+const ck=kw.toUpperCase().replace(/[^A-Z0-9 &'-]/g,' ');
+if(u.includes(ck)){if(kw.length>brand.length)brand=kw;}
+}
+}
+if(brand){
+const ub=brand.toUpperCase();
+if(BA[brand])brand=BA[brand];
+else if(BA[ub])brand=BA[ub];
+else brand=brand.charAt(0)+brand.slice(1).toLowerCase();
+d.brand=brand;
+}
+
+let product='';
+const pl=[];
+for(const line of lines){
+const t=line.trim();
+if(t.length<3||t.length>50)continue;
+if(t.match(/^\d+[,.]\d{2}/))continue;
+if(t.match(/^\d+\s*(pz|pezzi|conf|x|\*|gr|kg|ml|lt|g|l)/i))continue;
+if(store&&t.toUpperCase().includes(store.toUpperCase()))continue;
+if(brand&&t.toUpperCase().includes(brand.toUpperCase()))continue;
+const sw=['TOTALE','CONTANTI','RESTO','CASSA','SCONTO','IVA','ARTICOLO','DESCRIZIONE','PREZZO','IMPORTO','QTA','QUANT','SUBTOTALE','GRAZIE','ARRIVEDERCI','BENVENUTO','SPORTELLO','BANCOMAT','CREDITO','DEBITO','PAGAMENTO','TRANSAZIONE','NUMERO','DATA','ORA','Scontrino','FISCALE','CODICE'];
+let skip=false;
+for(const w of sw){if(t.toUpperCase().includes(w)){skip=true;break;}}
+if(!skip)pl.push(t);
+}
+pl.sort((a,b)=>b.length-a.length);
+if(pl.length>0){
+product=pl[0].replace(/^\d+\s*/,'').replace(/\s*\d+$/,'').trim();
+d.product=product;
+}
+
+const pr=/\d+[,.]\d{2}/g;
+const prices=[];
+let m;
+while((m=pr.exec(text))!==null){
+const v=parseFloat(m[0].replace(',','.'));
+if(v>0.01&&v<1000)prices.push(v);
+}
+if(prices.length>0){
+const s=[...prices].sort((a,b)=>a-b);
+d.price=s[0].toFixed(2);
+}
+
+const qr=/(\d+)\s*(pz|pezzi|conf|x|\*)/i;
+const qm=text.match(qr);
+if(qm)d.qty=parseInt(qm[1]);
+
+const dd=document.getElementById('odt');
+const dc=document.getElementById('odc');
+if(Object.keys(d).length>0){
+let h='';
+if(d.store)h+='<div class="odi"><span>🏪 Negozio</span><strong>'+d.store+'</strong></div>';
+if(d.brand)h+='<div class="odi"><span>🏷️ Marca</span><strong>'+d.brand+'</strong></div>';
+if(d.product)h+='<div class="odi"><span>🛒 Prodotto</span><strong>'+d.product+'</strong></div>';
+if(d.price)h+='<div class="odi"><span>💰 Prezzo</span><strong>€'+d.price+'</strong></div>';
+if(d.qty)h+='<div class="odi"><span>📦 Quantità</span><strong>'+d.qty+'</strong></div>';
+dc.innerHTML=h;
+dd.style.display='block';
+}else{dd.style.display='none';}
+
+if(d.store)document.getElementById('si').value=d.store;
+if(d.brand)document.getElementById('bi').value=d.brand;
+if(d.price)document.getElementById('pri').value=d.price;
+if(d.qty)document.getElementById('qi').value=d.qty;
+
+const bs=document.getElementById('bs');
+bs.innerHTML='';
+const kb=[...new Set(pu.map(p=>p.brand).filter(b=>b))].sort();
+kb.slice(0,8).forEach(b=>{
+const c=document.createElement('button');
+c.className='bc';
+c.textContent=b;
+c.onclick=()=>{document.getElementById('bi').value=b;};
+bs.appendChild(c);
+});
+
+const ps=document.getElementById('ps');
+ps.innerHTML='';
+const kp=[...new Set(pu.map(p=>p.product).filter(p=>p))].sort();
+const sg=[];
+if(d.product)sg.push(d.product);
+pl.slice(0,4).forEach(p=>{if(!sg.includes(p))sg.push(p);});
+kp.slice(0,6).forEach(p=>{if(!sg.includes(p))sg.push(p);});
+sg.slice(0,8).forEach(s=>{
+const c=document.createElement('button');
+c.className='pc';
+c.textContent=s;
+c.onclick=()=>{document.getElementById('pi2').value=s;};
+ps.appendChild(c);
+});
+
+document.getElementById('fc').style.display='block';
+}
+
+// ==================== FOTOCAMERA ETICHETTE ====================
+function openCameraEtic(){
+const cp=document.getElementById('cameraPreviewEtic');
+cp.style.display='block';
+document.getElementById('previewEtic').style.display='none';
+document.getElementById('orEtic').style.display='none';
+document.getElementById('fcEtic').style.display='none';
+navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}})
+.then(s=>{
+stream=s;
+document.getElementById('videoEtic').srcObject=s;
+})
+.catch(err=>{
+st('❌ Errore fotocamera: '+err.message);
+cp.style.display='none';
+});
+}
+
+function closeCameraEtic(){
+if(stream){
+stream.getTracks().forEach(t=>t.stop());
+stream=null;
+}
+document.getElementById('cameraPreviewEtic').style.display='none';
+document.getElementById('capturedImgEtic').style.display='none';
+}
+
+function takePhotoEtic(){
+const video=document.getElementById('videoEtic');
+const canvas=document.getElementById('canvasEtic');
+canvas.width=video.videoWidth;
+canvas.height=video.videoHeight;
+const ctx=canvas.getContext('2d');
+ctx.drawImage(video,0,0);
+const dataUrl=canvas.toDataURL('image/jpeg');
+document.getElementById('capturedImgEtic').src=dataUrl;
+document.getElementById('capturedImgEtic').style.display='block';
+closeCameraEtic();
+processImageEtic(dataUrl);
+}
+
+function handleImportEtic(e){
+const file=e.target.files[0];
+if(!file)return;
+const reader=new FileReader();
+reader.onload=(e2)=>{
+const dataUrl=e2.target.result;
+document.getElementById('previewEtic').src=dataUrl;
+document.getElementById('previewEtic').style.display='block';
+document.getElementById('orEtic').style.display='none';
+document.getElementById('fcEtic').style.display='none';
+processImageEtic(dataUrl);
+};
+reader.readAsDataURL(file);
+}
+
+function processImageEtic(dataUrl){
+document.getElementById('olEtic').classList.add('a');
+document.getElementById('orEtic').style.display='none';
+Tesseract.recognize(dataUrl,'ita',{
+logger:m=>{
+if(m.status==='recognizing text'){
+const pct=Math.round(m.progress*100);
+document.querySelector('#olEtic p').textContent='🔍 Sto leggendo l\'etichetta... '+pct+'%';
+}
+}
+}).then(result=>{
+cot=result.data.text;
+document.getElementById('otEtic').textContent=cot;
+document.getElementById('olEtic').classList.remove('a');
+document.getElementById('orEtic').style.display='block';
+edoEtic(cot);
+}).catch(err=>{
+document.getElementById('olEtic').classList.remove('a');
+st('❌ Errore OCR: '+err.message);
+showManualEtic();
+});
+}
+
+function showManualEtic(){
+document.getElementById('fcEtic').style.display='block';
+document.getElementById('previewEtic').style.display='none';
+document.getElementById('cameraPreviewEtic').style.display='none';
+document.getElementById('orEtic').style.display='none';
+document.getElementById('capturedImgEtic').style.display='none';
+}
+
+function retryOCREtic(){
+document.getElementById('fie').value='';
+const img=document.getElementById('capturedImgEtic');
+if(img.style.display!=='none'&&img.src){
+processImageEtic(img.src);
+}else if(document.getElementById('previewEtic').style.display!=='none'){
+processImageEtic(document.getElementById('previewEtic').src);
+}else{
+openCameraEtic();
+}
+}
+
+function skipOCREtic(){
+document.getElementById('olEtic').classList.remove('a');
+document.getElementById('orEtic').style.display='none';
+showManualEtic();
+}
+
+function edoEtic(text){
+const lines=text.split('\n').map(l=>l.trim()).filter(l=>l);
+const d={};
+
+let brand='';
+for(const line of lines){
+const u=line.toUpperCase().replace(/[^A-Z0-9 &'-]/g,' ');
+for(const kw of BK
